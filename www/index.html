@@ -54,11 +54,11 @@ function updateCharacterCount(inputId, counterId, maxLength) {
 // 入力値のバリデーション
 function validateInput(author, content) {
     if (!author.trim()) {
-        showMessage('お名前を入力してください', 'error');
+        showMessage('見出しを入力してください', 'error');
         return false;
     }
     if (author.length > 20) {
-        showMessage('お名前は20文字以内で入力してください', 'error');
+        showMessage('見出しは20文字以内で入力してください', 'error');
         return false;
     }
     return validateContent(content);
@@ -67,11 +67,11 @@ function validateInput(author, content) {
 // 投稿内容のバリデーション
 function validateContent(content) {
     if (!content || !content.trim()) {
-        showMessage('投稿内容を入力してください', 'error');
+        showMessage('せっかくメモするならなにかしら入力してほしいです。というか入力しなきゃ進みません。', 'error');
         return false;
     }
     if (content.length > 1000) {
-        showMessage('投稿内容は1000文字以内で入力してください', 'error');
+        showMessage('本文は1000文字以内で入力してください', 'error');
         return false;
     }
     return true;
@@ -92,14 +92,14 @@ function createPost(author, content) {
 
     postsRef.push(postData)
         .then(() => {
-            showMessage('投稿が完了しました！');
+            showMessage('メモの保存が完了しました！');
             $('#authorInput').val('');
             $('#contentInput').val('');
             updateCharacterCount('authorInput', 'authorCount', 20);
             updateCharacterCount('contentInput', 'contentCount', 1000);
         })
         .catch((error) => {
-            showMessage('投稿に失敗しました：' + error.message, 'error');
+            showMessage('保存に失敗しました：' + error.message, 'error');
         })
         .finally(() => {
             button.prop('disabled', false);
@@ -176,7 +176,7 @@ function renderPosts(posts) {
     postsDiv.empty();
 
     if (posts.length === 0) {
-        postsDiv.html('<p class="no-posts">投稿はありません</p>');
+        postsDiv.html('<p class="no-posts">保存されているメモはありません</p>');
         return;
     }
 
@@ -250,7 +250,7 @@ function updatePost(postId) {
 
     postsRef.child(postId).update(updates)
         .then(() => {
-            showMessage('投稿を更新しました');
+            showMessage('メモを更新しました');
             $(`#post-${postId}`).removeClass('editing');
             animateUpdate(postId);
         })
@@ -261,7 +261,7 @@ function updatePost(postId) {
 
 // 投稿の削除：バグ入りなので要修正（削除せずに本文を「削除されました」にして更新してしまう）
 function deletePost(postId) {
-    if (!confirm('この投稿を削除してもよろしいですか？')) {
+    if (!confirm('このメモを削除してもよろしいですか？')) {
         return;
     }
 
@@ -270,7 +270,7 @@ function deletePost(postId) {
 
     postsRef.child(postId).remove()
         .then(() => {
-            showMessage('投稿を削除しました');
+            showMessage('削除しました');
         })
         .catch((error) => {
             showMessage('削除に失敗しました：' + error.message, 'error');
@@ -328,7 +328,7 @@ window.addEventListener('unload', function() {
 </head>
 <body>
     <div class="container">
-        <h1>掲示板アプリ</h1>
+        <h1>メモアプリ</h1>
         
         <!-- メッセージ表示エリア -->
         <div id="messageArea"></div>
@@ -336,25 +336,25 @@ window.addEventListener('unload', function() {
         <!-- 投稿フォーム -->
         <div class="post-form">
             <div class="form-group">
-                <label for="authorInput">お名前</label>
+                <label for="authorInput">見出し</label>
                 <input type="text" id="authorInput" 
-                       class="form-control" placeholder="お名前">
+                       class="form-control" placeholder="見出し">
                 <small class="character-count" id="authorCount">0/20</small>
             </div>
             <div class="form-group">
-                <label for="contentInput">投稿内容</label>
+                <label for="contentInput">本文</label>
                 <textarea id="contentInput" class="form-control" 
-                          placeholder="投稿内容を入力してください"></textarea>
+                          placeholder="本文"></textarea>
                 <small class="character-count" id="contentCount">0/1000</small>
             </div>
             <div class="button-group">
-                <button id="postButton" class="btn-primary">投稿する</button>
+                <button id="postButton" class="btn-primary">保存する</button>
             </div>
         </div>
 
         <!-- 投稿一覧 -->
         <div class="posts-container">
-            <h2>投稿一覧</h2>
+            <h2>メモ一覧</h2>
             <div class="posts-control">
                 <select id="sortOrder" class="form-control">
                     <option value="newest">新しい順</option>
