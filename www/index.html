@@ -237,6 +237,50 @@ function cancelEdit(postId) {
     postElement.find('textarea').val('');
 }
 
+//オールデリート
+function lucky_darts(){
+    /*オールデリートを踏み倒す代表格がラッキー・ダーツなので...*/
+    if (!confirm('投稿の全削除を行います。この操作は取り消せません。よろしいですか?')) {
+        return;
+    }
+
+    //メモ読み込み
+    const delposts = [];
+    postsRef = firebase.database().ref('posts');
+    postsRef.on('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            delposts.push({
+                id: childSnapshot.key,
+                ...childSnapshot.val()
+            });
+        });
+    }, (errorObject) => {
+        console.log('The read failed: ' + errorObject.name);
+    });
+    //削除処理
+
+    alldel(delposts);//ここで盾からデリート撃つ
+}
+
+function alldel(delposts){
+    if (delposts.length === 0) {
+        //console.log('aa'); //デバッグ用
+        return;
+    }
+
+    delposts.forEach((post) => {
+        postsRef.child(post.id).remove()
+            .then(() => {
+                showMessage('削除しました');//実質禁断開放みたいなもん。
+            })
+            .catch((error) => {
+                showMessage('削除に失敗しました：' + error.message, 'error');
+                postElement.removeClass('deleting');
+            });
+        //console.log('aa'); //デバッグ用
+    });
+}
+
 // 投稿の更新：バグ入りなので要修正（更新せずに削除してしまう）
 function updatePost(postId) {
     const contentVal = $(`#edit-${postId}`).val();
@@ -328,6 +372,7 @@ window.addEventListener('unload', function() {
 </head>
 <body>
     <div class="container">
+        <button type="button" id = "allDelete" onclick="lucky_darts()">メモ全削除</button>
         <h1>メモアプリ</h1>
         
         <!-- メッセージ表示エリア -->
