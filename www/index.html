@@ -244,9 +244,8 @@ function lucky_darts(){
         return;
     }
 
-    //メモ読み込み
+    //全メモ読み込み
     const delposts = [];
-    postsRef = firebase.database().ref('posts');
     postsRef.on('value', (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             delposts.push({
@@ -259,25 +258,23 @@ function lucky_darts(){
     });
     //削除処理
 
-    alldel(delposts);//ここで盾からデリート撃つ
+    alldel(delposts);
 }
 
 function alldel(delposts){
     if (delposts.length === 0) {
-        //console.log('aa'); //デバッグ用
         return;
     }
 
     delposts.forEach((post) => {
         postsRef.child(post.id).remove()
             .then(() => {
-                showMessage('削除しました');//実質禁断開放みたいなもん。
+                showMessage('削除しました');
             })
             .catch((error) => {
                 showMessage('削除に失敗しました：' + error.message, 'error');
                 postElement.removeClass('deleting');
             });
-        //console.log('aa'); //デバッグ用
     });
 }
 
